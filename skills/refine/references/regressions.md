@@ -18,16 +18,15 @@ A change of behavior is not a regression when the new behavior is better, for ex
 
 ## Steps
 
-1. Run `<skill dir>/scripts/snapshot.sh > regress-<label>-start.txt` in the run directory, from the repository root, where the skill directory is the parent of the folder holding this file. It is your revert point, untracked files included. Count the lines with the script on `scope.txt`.
-2. Read the change in your range: `git diff $(cat <base file>) $(cat regress-<label>-start.txt)`. The snapshot includes new untracked files, which a plain `git diff` misses. Use `log.md` to learn why each change was made, but judge the code, not the log.
+1. Run `<skill dir>/scripts/snapshot.sh > regress-<label>-start.txt` in the run directory, from the repository root, where the skill directory is the parent of the folder holding this file. It is your revert point. Count the lines with the script on `scope.txt`.
+2. Read the change in your range: `git diff $(cat <base file>) $(cat regress-<label>-start.txt)`. Use `log.md` to learn why each change was made, but judge the code, not the log.
 3. If the diff is large, split it by module and spawn read-only general-purpose reviewers in one message, one per part. Each prompt gives the absolute path of this file, the run directory and the part to review, and asks for candidate regressions, each with the input or sequence of events that now goes wrong and the code that causes it. Otherwise review the diff yourself.
 4. Check every candidate against the code at the base commit and the current code. Skip any candidate that `regressions.md` already settles. A candidate is a regression only when you can name the input or sequence of events that now gives a wrong result. A change that removes a defect, behavior that `log.md` records as a deliberate bug fix, or a different behavior that is better than the old one is not a regression.
-5. Fix each confirmed regression in its smallest form. Restore the behavior rather than the old code, and don't revert a whole refactor when a targeted change restores what was lost. Design each fix with the three lenses from `reviewer.md` (next to this file). Prefer a fix that takes the wrong state away through a narrower type or contract (constraints), keeps the restored behavior from tangling with unrelated concerns (simplicity), and lets the types guarantee it instead of a convention callers must follow (parametricity). A fix that only adds a check or a special case is the last resort. When a lost test assertion caused the regression, add the assertion back to an existing test where one fits. After each fix, run the tests that cover it.
+5. Fix each confirmed regression in its smallest form. Restore the behavior rather than the old code, and don't revert a whole refactor when a targeted change restores what was lost. Design each fix with the three lenses from `reviewer.md` (next to this file). A fix that only adds a check or a special case is the last resort. When a lost test assertion caused the regression, add the assertion back to an existing test where one fits. After each fix, run the tests that cover it.
 6. If you changed any code, run the iteration verification once. If you changed nothing, skip it, since the tree is the one the last verification passed on. If it goes red and you can't fix it, revert with `<skill dir>/scripts/restore.sh $(cat regress-<label>-start.txt)` and report that.
 7. Append to the run files.
    - `regressions.md` gets one line per candidate: the behavior, and either `fixed` with the test that covers it, or `not a regression` with the reason.
    - `log.md` gets a section for this pass with each fix and the lines it added or removed.
-   - Leave `scoreboard.tsv` alone.
 
 ## Report
 

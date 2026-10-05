@@ -8,7 +8,7 @@ Before anything else, reread `rejected.md`. Look for findings rejected for a rea
 
 ## Final verification
 
-Run everything the final tier in `rules.md` names, following the procedures in `context.md`, and run the formatter. Follow the bounded-commands rules: this tier is the longest, and a hang here stalls the whole run. When a step goes red, fix or revert the change that caused it and rerun it until it passes. Log each fix in `log.md`.
+Run everything the final tier in `rules.md` names, following the procedures in `context.md`, and run the formatter. When a step goes red, fix or revert the change that caused it and rerun it until it passes. Log each fix in `log.md`.
 
 ## Report
 

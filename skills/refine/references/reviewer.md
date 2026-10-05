@@ -2,7 +2,7 @@
 
 You review one scope of code through one lens, and the iteration agent that spawned you names it. Read `rules.md` (next to this file) first, then `context.md`, and `rejected.md` in the run directory. Don't propose anything `rejected.md` already lists or `log.md` already did.
 
-For a diff scope, read `diff.patch` and propose changes to its lines only. Read the code around them to understand it, and leave it as it is.
+For a diff scope, read `diff.patch`.
 
 You only read. Leave files, builds, tests and git state untouched.
 

@@ -23,8 +23,8 @@ A run has three roles, and each works in its own context.
 
 The scope is one of two kinds, and the setup agent records which in `context.md`.
 
-- **An area**, such as a module, a package or a set of paths. Changes may reach past it when the removal is worth it.
-- **A diff**, such as pending changes, a branch or a pull request. Only the lines the diff added or changed are open to change, and the code around them stays as it is. Treat any scope that names changes rather than code as a diff.
+- **An area**, such as a module, a package or a set of paths.
+- **A diff**, such as pending changes, a branch or a pull request. Treat any scope that names changes rather than code as a diff.
 
 ## Files
 

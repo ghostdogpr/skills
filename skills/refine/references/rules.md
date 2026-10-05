@@ -31,7 +31,7 @@ A change never saves lines by trading a type guarantee for a partial call, an op
 
 ## Keep type signatures
 
-A change never saves lines by dropping a type annotation, such as the return type of a function, a local helper or a lambda, the declared type of a field, or a type hint in a language where hints are optional. An annotation states the contract to the reader and the compiler, so removing it removes no complexity. New functions and helpers get explicit return types too, even when that wraps a line. A regression pass treats a dropped annotation as a regression.
+A change never saves lines by dropping a type annotation, such as the return type of a function, a local helper or a lambda, the declared type of a field, or a type hint in a language where hints are optional. An annotation states the contract to the reader and the compiler, so removing it removes no complexity. New functions and helpers get explicit return types too, even when that wraps a line.
 
 ## Bugs
 
