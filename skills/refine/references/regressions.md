@@ -38,6 +38,7 @@ regression pass: <label>
 lines: <before> -> <after>
 candidates: <n>, confirmed: <n>, fixed: <n>
 tests: <passed>/<total>, "not rerun, no change", or red and reverted: <one-line cause>
-tooling problems: <hangs killed, tooling repaired, or "none">
 fixed: <one line naming the most important fix, or "none">
 ```
+
+Only when a command hung or the build tooling needed repair, add a last line: `problem: <what happened>`.
