@@ -45,7 +45,7 @@ A bug is a finding like any other, and its fix removes the structure that let th
 
 `context.md` has the procedures for both tiers.
 
-- The iteration verification runs at the end of every iteration and regression pass: the unit suite in the default configuration.
+- The iteration verification runs at the end of every iteration, and of every regression pass that changed code: the unit suite in the default configuration.
 - The final verification runs once, on the converged state: the unit suite in every configuration CI builds (language versions, platforms, backends), every conformance or audit suite in full, the compatibility checks, and the docs build. None of it runs before convergence.
 - Run the formatter whenever it helps; it's fast.
 - Keep one verification run alive at a time, because suites that bind ports or share a build daemon fail against each other. A failure for tooling reasons, such as a port in use or suites with no result, says nothing about the code. Fix the tooling and rerun.
