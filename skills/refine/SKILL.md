@@ -37,6 +37,7 @@ The skill's folder holds the briefs. Pass their absolute paths to the subagents,
 - `references/final.md` is the brief for the final verification and report.
 - `scripts/count-lines.sh` counts non-blank, non-comment lines. With `--at <commit>` it counts the files as they are in that commit.
 - `scripts/snapshot.sh` prints the id of a commit holding the current working tree, untracked files included, without touching the index or the branch. Run it from the repository root.
+- `scripts/restore.sh <commit>` puts the working tree back to such a snapshot, untracked files included, and leaves the index and the branch alone. Agents revert with it.
 
 The run's state lives in a `refine/` directory in your scratchpad, or in a temporary directory outside the repository if you have no scratchpad. The agents write it, and you read only `scoreboard.tsv`, the tail of `progress.log` and the reports they return.
 
@@ -68,7 +69,7 @@ The run's state lives in a `refine/` directory in your scratchpad, or in a tempo
 5. **Steer from the numbers.** The next iteration's note is your only lever.
    - If lines rose in the last iteration, the next note says: "The scope grew last iteration. This round accepts nothing that adds net lines, except a real bug fix with no structural alternative. Find the mechanism that absorbs the growth."
    - If the report says no accepted change removed lines, the next note says: "The last round found no removal. Reviewers propose only redesigns: a different core model, merged passes, a deleted module or a changed contract. No local cleanups." If that round is empty too, the loop has converged.
-   - If an iteration reports red tests it couldn't fix, it reverted to its start diff. Run the iteration again with a note naming what failed.
+   - If an iteration reports red tests it couldn't fix, it reverted to `iter<N>-base.txt`. Run the iteration again with a note naming what failed.
 6. **Sweep for regressions.** Once the loop converges, spawn a fresh regression agent with the base file `run-base.txt` and the pass label `final.<k>`, so one reviewer sees the whole run's diff at once. Bugs that come from two iterations interacting only show up here. Repeat with a fresh agent until a pass confirms none.
 7. **Finish.** Spawn one general-purpose final agent with `references/final.md`, `references/rules.md` and the run directory. It runs the final verification and returns a summary followed by the full report. If it sends findings back into the loop, run more iterations, sweep again and finish again. Otherwise save the report part verbatim as `report.md` in the run directory, then give the user the scoreboard table, the summary and the path to `report.md`.
 
