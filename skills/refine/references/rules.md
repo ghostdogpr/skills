@@ -55,7 +55,7 @@ A bug is a finding like any other, and its fix removes the structure that let th
 
 Every command ends on its own or gets killed.
 
-- Give every command a timeout of about twice its normal duration from `context.md`.
+- Give every command a timeout of about twice its normal duration from `context.md`. Use your tool's timeout setting, or `timeout` where it exists. macOS lacks it, so use `perl -e 'alarm shift; exec @ARGV' <seconds> <command>` there. Never run a command unbounded because a tool is missing.
 - The timeout kills the whole process tree. Killing a build client often leaves the test process it forked running inside the build daemon, so check for that process and kill it too.
 - On a hang, kill the stuck process, then write the command, how long it ran and the test it was on to `progress.log` and to your report. Never wait on a hung process.
 - A test that waits on another thread, process or server uses a bounded wait, so a broken change fails it instead of hanging it. This matters most when you revert a fix to watch its test fail.

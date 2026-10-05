@@ -20,7 +20,7 @@ Read `rules.md` (next to this file) first, then `context.md` and `rejected.md` i
 7. Append to the run files.
    - `log.md` gets a section for this iteration with each change, its lens, and what it removed. Bug fixes list their test.
    - `rejected.md` gets one line per rejected finding with its reason.
-   - `scope.txt` gains any file you split out of the scope.
+   - `scope.txt` gains any file you edited outside it, so its lines are counted.
    - Leave `scoreboard.tsv` alone. The orchestrator writes it from its own count.
 
 ## Report
