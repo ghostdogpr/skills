@@ -31,7 +31,7 @@ Return exactly this and nothing else. The orchestrator keeps each report for the
 iteration: <N>
 lines: <before> -> <after>
 findings: constraints <proposed>/<accepted>, simplicity <proposed>/<accepted>, parametricity <proposed>/<accepted>
-bugs: fixed <n>, of which structural <n>
+bugs: fixed <n>, of which structural <n>, adding <n> lines of tests
 tests: <passed>/<total>, or red and reverted: <one-line cause>
 incidents: <hangs killed, tooling repaired, or "none">
 removed: <one line naming the largest removal, or "none">
