@@ -15,7 +15,7 @@ Every agent in a refine run follows these rules. The goal is less complexity wit
 - Behavior is what the spec and clients can rely on, not everything a test happens to pin. A detail the spec leaves open, such as the order of entries in an error list, may change when the result is at least as good for the reader; update the tests that pin it. Keep what clients see: values, error messages, paths and counts.
 - Input the code accepted before stays accepted: a value that parsed, a request that succeeded, data already stored. A stricter rule breaks the users who sent or stored that input, however clean it is. Leave such a change out of the run and list it in the final report as a proposal.
 - The public API is behavior unless `context.md` says it is free to change: the signatures users compile against, and their doc comments, which state the contract. A change updates a doc sentence it makes false, and the updated sentence still describes what users rely on.
-- Tests keep running everywhere they ran before. A change never narrows a test to the configuration CI happens to run, such as one backend or one platform, and never deletes a test whose case no other test covers.
+- Tests keep running everywhere they ran before. A change never narrows a test to the configuration CI happens to run, such as one backend or one platform, and never deletes a test whose case no other test covers. Before removing or merging a test, name the test that still covers its case and confirm that test would fail if the code broke.
 - When the scope implements a spec, read the spec text before reshaping anything spec-driven, and check reference implementations where the text is ambiguous. A redesign may shrink the code a spec requires, never the behavior.
 - Runtime stays as fast or faster, and fewer lines never pays for a slower hot path. A change on a hot path adds no work per call, such as a new allocation, a scan where there was a lookup, an extra pass or a dropped fast path. Argue it from the change itself. Benchmarks are slow and noisy, so run one only when that argument can't settle the question.
 
@@ -63,7 +63,7 @@ Every command ends on its own or gets killed.
 
 ## Progress
 
-Append one line to `progress.log` in the run directory when you start a step and before any command that runs longer than a minute: the time, your role and label, the step, and its normal duration when you know it. For example: `14:02 iter3 unit suite, normal ~4 min`. The orchestrator reads it to tell a slow step from a hung one.
+Append one line to `progress.log` in the run directory when you start a step and before any command that runs longer than a minute: the time, your role and label, the step, and its normal duration when you know it. For example: `14:02 iter3 unit suite, normal ~4 min`. The orchestrator reads it to tell a slow step from a hung one. Agents that only read skip this.
 
 ## Style
 

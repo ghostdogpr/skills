@@ -22,4 +22,4 @@ Some agent harnesses block subagents from writing report files, so don't write `
 - the proposals left for the user: stricter input rules, and for a diff scope the bugs found in code outside the diff;
 - every hang, kill and tooling repair the agents logged.
 
-Return two parts. First, a summary of at most ten lines: the start and end line counts, bugs fixed, verification results, and anything the user needs to decide. Then a `---` line, followed by the full report.
+Count `tests.txt` with `count-lines.sh` in the skill's `scripts` folder, next to the folder holding this file, both now and `--at` the commit in `run-base.txt`. Return two parts. First, a summary of at most ten lines: the start and end source and test line counts, bugs fixed, verification results, and anything the user needs to decide. Then a `---` line, followed by the full report.

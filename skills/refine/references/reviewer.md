@@ -1,8 +1,8 @@
 # Lens reviewer
 
-You review one scope of code through one lens, and the iteration agent that spawned you names it. Read `rules.md` (next to this file) first, then `context.md`, and `rejected.md` in the run directory. Don't propose anything `rejected.md` already lists or `log.md` already did.
+You review one scope of code through one lens, and the iteration agent that spawned you names it. Read `rules.md` (next to this file) first, then `context.md`, `rejected.md` and as much of `log.md` as you need in the run directory. Don't propose anything `rejected.md` already lists or `log.md` already did.
 
-For a diff scope, read `diff.patch`.
+For a diff scope, read `current.patch`, the diff as it stands now. `diff.patch` is the frozen diff that `rules.md` uses as the boundary, so open it only to settle whether a line is in scope.
 
 You only read. Leave files, builds, tests and git state untouched.
 
@@ -10,7 +10,7 @@ You only read. Leave files, builds, tests and git state untouched.
 
 The goal is less code with the same behavior. The findings worth the most are ambitious ones: a different core data model in which the invalid states can't be written, two passes merged into one, a module that turns out to be unnecessary, a contract changed across ten files so the checks on both sides disappear. Local moves stall at a local optimum. The large reductions come from a better model, so propose refactors and redesigns freely. Local cleanups are fine too, but rank below.
 
-Rank by net lines removed. A proposal that adds a check, a table entry or a branch to handle one more case is not a finding. If `log.md` shows several recent bug fixes of one kind, look for the mechanism in your lens that would make that kind impossible. That counts among your most valuable findings.
+Rank by net source lines removed. Test code is counted separately, so a test-only cleanup ranks below any source removal. A proposal that adds a check, a table entry or a branch to handle one more case is not a finding. If `log.md` shows several recent bug fixes of one kind, look for the mechanism in your lens that would make that kind impossible. That counts among your most valuable findings.
 
 Don't hunt for bugs. Don't enumerate malformed inputs to see what breaks. When you meet a bug while reading, report it with the structure that lets it through and the change to that structure. When several bugs share a cause, report them as one finding.
 
@@ -32,7 +32,7 @@ Which independent concerns have become entangled? Can they be understood separat
 
 Simple means one fold, not braided with anything else. It is objective, and it is a different axis from easy, which only means familiar or close at hand. Two concerns are complected when a reader can't think about one without the other. Separate files don't fix that on their own, because modules can still be braided through shared state, flags or conventions. Judge the running artifact, not how pleasant the code was to write.
 
-A change removes complexity here when a question about one concern no longer needs the other concern's code to answer it. Hunt one concept defined twice, caches and side maps kept apart from the data they describe, fast paths woven into logic, stored fields that could be derived, state threaded through code that only needs a value, and conditionals that encode a decision made elsewhere.
+A change removes complexity here when a question about one concern no longer needs the other concern's code to answer it. Hunt one concept defined twice, including one the scope reimplements from elsewhere in the repository, caches and side maps kept apart from the data they describe, fast paths woven into logic, stored fields that could be derived, state threaded through code that only needs a value, and conditionals that encode a decision made elsewhere.
 
 ### Parametricity (Wadler, "Theorems for free!")
 
@@ -44,7 +44,7 @@ A change removes complexity here when a property that held by discipline now hol
 
 ## Output
 
-Return at most 6 findings, ranked by estimated net lines removed. An empty answer is valid, and a padded one wastes a round.
+Return at most 6 findings, ranked by estimated net source lines removed. An empty answer is valid, and a padded one wastes a round.
 
 A redesign finding gives:
 - the essential problem in a few sentences: inputs, outputs and rules;

@@ -10,7 +10,7 @@ Agent skills I use day to day.
 - **Simplicity** (Hickey, "Simple Made Easy"). Which independent concerns have become entangled?
 - **Parametricity** (Wadler, "Theorems for free!"). What does the type guarantee, and what still depends on discipline?
 
-A fresh agent applies the accepted findings, another checks them for regressions, and rounds continue until one finds nothing to remove. A final pass runs your full verification and writes a report.
+A fresh agent applies the accepted findings, another checks them for regressions, and rounds continue until they stop finding anything to remove. A final pass runs your full verification and writes a report.
 
 The scope can be an area (`/refine the query planner`) or a diff (`/refine the changes on this branch`), which only touches the lines the diff changed.
 
