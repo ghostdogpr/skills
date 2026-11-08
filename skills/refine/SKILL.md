@@ -63,7 +63,7 @@ Rounds are labelled by phase and number: `correct-1`, `elegant-3`, `fast-1`.
 3. Note the time. Count `scope.txt` yourself, "before" with `--at $(cat <label>-base.txt)` on the current list, and recount the diff's net size the same way.
 4. Append the row to `scoreboard.md`, report, and go straight on to the next round without waiting for the user.
 
-The user needn't know how refine works, so talk to them in plain words, naming the phases "make it correct", "make it elegant" and "make it fast", without fixers, reviewers, areas, lenses or round labels. After every round, show the whole scoreboard as one table, its columns the phase and round number, the duration in minutes, source lines before → after (and the diff's net size), and findings applied/proposed. Under it, two lines at most: what changed, in user terms, and what runs next, plus any question and any red test or `problem:` line.
+The user needn't know how refine works, so talk to them in plain words, naming the phases "make it correct", "make it elegant" and "make it fast", without fixers, reviewers, areas, lenses or round labels. After every round, show the whole scoreboard as one table, its columns the phase and round number, the duration in minutes, source lines before → after (and the diff's net size), and findings applied/proposed. Under it, two lines at most: what changed, in user terms, and what runs next, plus any question, any red test or `problem:` line, and a note when the round added files to the count.
 
 A fixer that reports red tests it couldn't fix has reverted to `<label>-base.txt`: run the round again with a note naming what failed. A reverted round doesn't count toward ending a phase.
 
@@ -75,10 +75,7 @@ The fixer runs one reviewer per area of `areas.md` that isn't done. An area whos
 
 ### Elegant
 
-The fixer runs the `constraints`, `simplicity` and `parametricity` reviewers. A lens whose reviewer led to nothing accepted is dropped for the rest of the phase: name the lenses still running in each fixer's prompt. A round is thin when its net source removal is under max(5 lines, 1% of the diff's net size), or of the scope's source lines for an area scope.
-
-- After a thin round, the next note says: "The last round removed little. Reviewers propose redesigns first: a different core model, merged passes, a deleted module or a changed contract. Local cleanups rank below."
-- The phase ends when no lens is left, or after two thin rounds in a row.
+The fixer runs the `constraints`, `simplicity` and `parametricity` reviewers. A lens whose reviewer led to nothing accepted is dropped for the rest of the phase: name the lenses still running in each fixer's prompt. The phase ends when no lens is left, or after a thin round: one whose net source removal is under max(5 lines, 1% of the diff's net size), or of the scope's source lines for an area scope.
 
 ### Fast
 

@@ -12,7 +12,7 @@ Run every step of the final tier in `rules.md`, following `context.md`, and the 
 
 ## Report
 
-Return the report in Markdown, without writing `report.md`: the coordinator saves it. It covers:
+Return the report in Markdown, without writing `report.md`: the coordinator saves it. Keep it as short as the run allows: one line per change, and no section that has nothing to say. It covers:
 - the scoreboard;
 - each phase's changes, condensed from `log.md`: the bugs fixed with their tests, what the elegant phase removed, the work the fast phase took off each hot path;
 - the judgment calls;

@@ -12,7 +12,7 @@ Agent skills I use day to day.
    - **Simplicity** (Hickey, "Simple Made Easy"). Which independent concerns have become entangled?
    - **Parametricity** (Wadler, "Theorems for free!"). What does the type guarantee, and what still depends on discipline?
 
-   A lens whose reviewer finds nothing worth applying isn't run again. Rounds continue until no lens is left or they stop removing code.
+   A lens whose reviewer finds nothing worth applying isn't run again. Rounds continue until no lens is left or a round removes little.
 3. **Make it fast.** One reviewer looks for work to take off the hot paths, and only those. Skipped when nothing in the scope is hot.
 
 Each phase has one goal. The fixer rejects findings that aren't real or aren't worth it, and has its own changes reviewed for regressions before it verifies a round. A problem that belongs to another phase is noted for that phase rather than fixed, except a bug, which is fixed wherever it turns up. What the code is meant to do and the hot paths come from what you pass along with the scope, such as a sentence, a pull request link or a protocol name, from the conversation if there is one, and from the repository for the rest. When a decision is really yours, the run asks it in its round report and keeps going: answer any time and the next round applies it, or leave it for the final report. A final pass runs your full verification and writes a report.
