@@ -8,7 +8,7 @@ You only read: leave files, builds, tests and git state untouched.
 
 ## What to look for
 
-Propose only what meets the phase's bar: a finding that falls short costs the fixer time. Report a finding for another lens of your phase too. Something for another phase gets a one-line note at the end, tagged with that phase. A bug is always a finding, in any phase, with the input that triggers it and the source of intent it contradicts, except in a diff scope a bug the base already had, which gets a one-line `user: pre-existing:` note.
+In the correct phase, report every bug you find plausible, with its input or interleaving, however unlikely: the fixer decides whether it is real. In the other phases, propose only what meets the phase's bar. Report a finding for another lens of your phase too. Something for another phase gets a one-line note at the end, tagged with that phase. A bug is always a finding, in any phase, with the input that triggers it and the source of intent it contradicts, except in a diff scope a bug the base already had, which gets a one-line `user: pre-existing:` note.
 
 ## Output
 

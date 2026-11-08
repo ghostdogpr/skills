@@ -1,6 +1,6 @@
 ---
 name: refine
-description: Take working code through three phases, each a loop of reviewers and a fixer, make it do what it is meant to do, then elegant with less code and the same behavior, then fast where speed matters.
+description: Take working code through make it correct, make it elegant and make it fast, each a loop of reviewers and a fixer.
 disable-model-invocation: true
 argument-hint: <scope, and optionally what it must do, e.g. "the changes on this branch, implements RFC 6455" or "the planner module, see PR #123">
 ---
@@ -11,9 +11,9 @@ Scope: $ARGUMENTS
 
 The code already works. Refine takes it through the three steps that follow "make it work", in order:
 
-1. **Correct.** Find where the code doesn't do what it is meant to, and fix it. Behavior changes here, and only here.
-2. **Elegant.** Remove complexity and keep the behavior. Success is measured in source lines that disappear.
-3. **Fast.** Make the hot paths do less work, and keep the behavior. Skipped when nothing in the scope is hot.
+1. **Make it correct.** Find where the code doesn't do what it is meant to, and fix it. Behavior changes here, and only here.
+2. **Make it elegant.** Remove complexity and keep the behavior. Success is measured in source lines that disappear.
+3. **Make it fast.** Make the hot paths do less work, and keep the behavior. Skipped when nothing in the scope is hot.
 
 A problem that belongs to another phase is noted for that phase. A bug is the exception: whichever phase meets it fixes it, except in a diff scope a bug the diff didn't cause, which is only listed.
 
@@ -54,16 +54,16 @@ Rounds are labelled by phase and number: `correct-1`, `elegant-3`, `fast-1`.
 1. **Find the code.** Use the repository the scope names. For another repository, such as a link to a remote branch, use the user's local clone if it is clean, or clone it into your scratchpad. Fetch a base that lives in another remote into a local ref. Never switch the branch of a clone the user works in.
 2. **Gather.** Write down every hint about what the code should do and about speed, from the invocation text and the conversation before it: a description, a pull request or issue, a protocol or RFC, a design doc, a remark that a path must be fast. Copy words and links verbatim. With no hint, write "none given".
 3. **Set up.** Note the time with `date +%H:%M` and spawn one general-purpose agent with `setup.md`, the scope, the repository root, the run directory, your notes and your memory directory if you keep one. Send it back if its final verification misses a step you know the project needs.
-4. **Measure.** Run `scripts/snapshot.sh > run-base.txt` and `scripts/count-lines.sh -f scope.txt`, and for a diff scope `--at $(cat diff-base.txt) -f scope-base.txt`; the difference is the diff's net size. Write the scoreboard header and row 0 with setup's duration. Tell the user the scope's size, the sources of intent and any setup couldn't reach, the path of `intent.md`, the hot paths or that the fast phase is skipped, and the areas. Ask setup's questions as the run's first ones. Pass on setup's notes that bear on the run. Then go straight on to the first round.
+4. **Measure.** Run `scripts/snapshot.sh > run-base.txt` and `scripts/count-lines.sh -f scope.txt`, and for a diff scope `--at $(cat diff-base.txt) -f scope-base.txt`; the difference is the diff's net size. Write the scoreboard header and row 0 with setup's duration. Tell the user in a few lines what will be refined, where its intent comes from, with the path of `intent.md` and any source setup couldn't reach, and whether "make it fast" will run. Ask setup's questions, and pass on its notes that bear on the run. Then go straight on to the first round.
 
 ## Rounds
 
 1. Run `scripts/snapshot.sh > <label>-base.txt` and note the time.
-2. Spawn one general-purpose fixer with `fixer.md` and the phase file, the repository root, the run directory, the round label and your steering note. Wait for it. Never run two agents that edit the tree at once.
+2. Spawn one general-purpose fixer with `fixer.md` and the phase file, the repository root, the run directory, the round label and your steering note. Wait for its report, and when it still has background work running, stop it. Never run two agents that edit the tree at once.
 3. Note the time. Count `scope.txt` yourself, "before" with `--at $(cat <label>-base.txt)` on the current list, and recount the diff's net size the same way.
 4. Append the row to `scoreboard.md`, report, and go straight on to the next round without waiting for the user.
 
-The report always holds the whole scoreboard: one table with a row per round, its columns the label, the duration in minutes, source lines before → after (and the diff's net size), findings accepted/proposed per reviewer, and bugs fixed. Under it, one line on the round's main change, any red test result or `problem:` line, one line on what runs next, and the round's `ask:` lines as questions.
+The user needn't know how refine works, so talk to them in plain words, naming the phases "make it correct", "make it elegant" and "make it fast", without fixers, reviewers, areas, lenses or round labels. After every round, show the whole scoreboard as one table, its columns the phase and round number, the duration in minutes, source lines before → after (and the diff's net size), and findings applied/proposed. Under it, two lines at most: what changed, in user terms, and what runs next, plus any question and any red test or `problem:` line.
 
 A fixer that reports red tests it couldn't fix has reverted to `<label>-base.txt`: run the round again with a note naming what failed. A reverted round doesn't count toward ending a phase.
 

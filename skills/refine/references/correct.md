@@ -21,7 +21,7 @@ Each reviewer takes one area of `areas.md`. An area whose reviewer led to no fix
 
 ## How to review an area
 
-Read all of the area's code and the sources `areas.md` names for it, two ways:
+Start with the code the area's last round changed, which `log.md` names. Then read all of the area's code and the sources `areas.md` names for it, two ways:
 
 - **From intent.** For each thing the sources say the code does, find the code and check that it holds, in every variant and configuration they name. Where a source cites a standard, read its text, and reference implementations where it is ambiguous. Something a source promises and the code doesn't do is a bug.
 - **From the code.** For each function, ask which inputs and states its callers can produce, and what it does with them: empty, single and maximal values, boundaries, duplicates, encodings, errors and timeouts from dependencies, retries, concurrent calls, cancellation, teardown and partial failure.

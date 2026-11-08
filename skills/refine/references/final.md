@@ -27,4 +27,4 @@ Return the report in Markdown, without writing `report.md`: the coordinator save
 - for a diff scope, the pre-existing bugs, one line each;
 - every hang, kill and tooling repair.
 
-Count `tests.txt` with `count-lines.sh` in the skill's `scripts` folder, next to this file's folder, now and `--at` the commit in `run-base.txt`. Return a summary of at most ten lines first: start and end source and test lines, bugs fixed, verification results, and the decisions by number in one line each. Then a `---` line and the full report.
+Count `tests.txt` with `count-lines.sh` in the skill's `scripts` folder, next to this file's folder, now and `--at` the commit in `run-base.txt`. Return a summary of at most ten lines first, in plain words for someone who doesn't know how refine works: start and end source and test lines, bugs fixed, verification results, and the decisions by number in one line each. Then a `---` line and the full report.
