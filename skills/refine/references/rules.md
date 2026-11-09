@@ -44,7 +44,7 @@ Never save lines by dropping a type annotation: a return type, a field's type, a
 
 `context.md` has the procedures.
 
-- The round verification ends every round: the unit suite in the default configuration.
+- The round verification ends every round that changed code: the unit suite in the default configuration.
 - A verification passes only when its log shows the tests ran. A run that reports no tests, or far fewer than the last one, is a tooling failure.
 - The final verification runs once, after the last phase: the unit suite in every configuration CI builds, every conformance suite in full, the compatibility checks and the docs build.
 - Run the formatter whenever it helps.

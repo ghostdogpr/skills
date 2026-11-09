@@ -24,7 +24,7 @@ Read `rules.md` (next to this file), the phase file, and `context.md`, `intent.m
    - In the correct phase, review the diff yourself, as if someone else wrote it, and ask whether a fix breaks behavior it doesn't target.
 
    Fix or revert each real regression.
-6. Run the round verification, and again if a regression fix landed after it started. If it goes red and you can't fix it, revert to `<label>-base.txt` and report that.
+6. Run the round verification, and again if a regression fix landed after it started. Skip it when the round changed nothing. If it goes red and you can't fix it, revert to `<label>-base.txt` and report that.
 7. Count the lines again. In the elegant phase, revert the changes that grew the scope, bug and regression fixes aside.
 8. Write the round down: a `log.md` section with each change and its lens, in the phase file's form; in an area scope, any file you edited outside `scope.txt` or `tests.txt` added to it; and in the correct phase, `done <label>` in `areas.md` for each area whose reviewer led to no fix.
 
@@ -40,7 +40,7 @@ rejected: not real <n>, not worth it <n>, moved to other phases or the user <n>
 bugs: fixed <n>, pre-existing listed <n>
 held: <n> changes joined a compatibility question
 areas: <n> of <total> still reviewed (correct phase only)
-tests: <passed>/<total>, or red and reverted: <one-line cause>
+tests: <passed>/<total>, not run (nothing changed), or red and reverted: <one-line cause>
 main: <the round's most important change, or "none">
 ```
 

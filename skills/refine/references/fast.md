@@ -16,7 +16,7 @@ A finding is worth it when all of these hold:
 - its cost to the code is in proportion to the gain;
 - behavior holds, including for the inputs the correct phase fixed. A cache keys on everything its result depends on.
 
-Reject a micro-optimization the compiler or runtime already makes, and a gain that is a guess. A bug met here is fixed by the rules in `correct.md`. A structural cleanup goes to `deferred.md` as `user:`.
+Reject a micro-optimization the compiler or runtime already makes, and a gain that is a guess. A change that adds a fiber, queue, lock, cache or hand-written replacement for a library call isn't applied: it goes to `deferred.md` as `user:`, with its measured gain and what it adds. A bug met here is fixed by the rules in `correct.md`. A structural cleanup goes to `deferred.md` as `user:`.
 
 ## Ranking and log
 

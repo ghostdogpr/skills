@@ -79,7 +79,7 @@ The fixer runs the `constraints`, `simplicity` and `parametricity` reviewers. A 
 
 ### Fast
 
-Skip this phase when `context.md` lists no hot paths. The fixer runs the `hot-paths` reviewer, and the phase ends after a round that accepts nothing.
+Skip this phase when `context.md` lists no hot paths. The fixer runs the `hot-paths` reviewer, and the phase ends after a round that applies no speed change: bug and regression fixes don't count.
 
 ## Finish
 
