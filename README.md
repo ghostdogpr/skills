@@ -36,7 +36,7 @@ Each phase repeats until there is nothing left worth doing, with your tests run 
 
 A git repository, a test suite, and an agent that can start subagents (I use Claude Code). It reads your `AGENTS.md` or `CLAUDE.md` to learn how to build and test your project.
 
-Runs are long and use a lot of tokens: a small pull request took about 50 minutes, and a 1,300-line concurrent module more than 5 hours. Start with a small scope.
+Runs are long and use a lot of tokens, so start with a small scope.
 
 ## Install
 
