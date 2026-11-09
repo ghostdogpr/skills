@@ -36,8 +36,6 @@ Each phase repeats until there is nothing left worth doing, with your tests run 
 
 A git repository, a test suite, and an agent that can start subagents (I use Claude Code). It reads your `AGENTS.md` or `CLAUDE.md` to learn how to build and test your project.
 
-Runs are long and use a lot of tokens, so start with a small scope.
-
 ## Install
 
 ```sh
