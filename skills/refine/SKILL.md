@@ -1,80 +1,104 @@
 ---
 name: refine
-description: Refine a scope of code through constraints, simplicity and parametricity reviews until it converges on a smaller design, keeping features and speed.
+description: Take working code through make it correct, make it elegant and make it fast, each a loop of reviewers and a fixer.
 disable-model-invocation: true
-argument-hint: <scope, e.g. "the planner module" or "the changes on this branch">
+argument-hint: <scope, and optionally what it must do, e.g. "the changes on this branch, implements RFC 6455" or "the planner module, see PR #123">
 ---
 
 # Refine
 
 Scope: $ARGUMENTS
 
-Success is measured in source lines that disappear while every feature stays, every bug found gets fixed and no hot path gets slower. Test lines are counted separately, because a smaller test suite is not a smaller design. A bug shows where the design lets a wrong state through, and the best fix takes that state away.
+The code already works. Refine takes it through the three steps that follow "make it work", in order:
+
+1. **Make it correct.** Find where the code doesn't do what it is meant to, and fix it. Behavior changes here, and only here.
+2. **Make it elegant.** Remove complexity and keep the behavior. Success is measured in source lines that disappear.
+3. **Make it fast.** Make the hot paths do less work, and keep the behavior. Skipped when nothing in the scope is hot.
+
+A problem that belongs to another phase is noted for that phase. A bug is the exception: whichever phase meets it fixes it, except in a diff scope a bug the diff didn't cause, which is only listed.
 
 ## Roles
 
-A run has three roles, and each works in its own context.
-
-- **You are the orchestrator.** You never read source code, diffs or review findings. You set up the run, spawn one iteration agent at a time, measure the scope after each one, report the numbers and decide when to stop. This keeps your context small for the whole run.
-- **The iteration agent** is a fresh subagent for every iteration. It spawns the three lens reviewers, triages their findings, applies and verifies the accepted ones, logs them and returns a short report. Spawn a new one each time and never resume a previous one, so no iteration inherits the last one's line of thought.
-- **The lens reviewers** are three read-only subagents per iteration, one per lens. The iteration agent spawns them.
+- **You are the coordinator.** You never read source code, diffs or findings. You gather the user's hints, spawn one agent at a time, measure, report after every round and decide when a phase ends.
+- **The fixer** is a fresh subagent for every round, never resumed. It spawns the reviewers, judges each finding, applies the ones worth it, verifies, logs and returns a short report.
+- **The reviewers** only read: one per area in the correct phase, one per lens in the others, and one for each elegant or fast round's changes, for regressions.
+- **The setup and final agents** prepare the run and close it.
 
 ## Scope kinds
 
-The scope is one of two kinds, and the setup agent records which in `context.md`.
-
 - **An area**, such as a module, a package or a set of paths.
-- **A diff**, such as pending changes, a branch or a pull request. Treat any scope that names changes rather than code as a diff.
+- **A diff**, such as pending changes, a branch or a pull request: any scope that names changes rather than code. Every phase reviews what the diff changed, not what the base already had.
 
 ## Files
 
-The skill's folder holds the briefs. Pass their absolute paths to the subagents, since subagents don't know where this skill lives. Each brief finds `rules.md`, the other briefs and the scripts from its own location. Run the scripts from the repository root, and give them the run's files by full path.
+The `references` folder holds the briefs: `rules.md` for every agent, `correct.md`, `elegant.md` and `fast.md` for the phases, and `setup.md`, `fixer.md`, `reviewer.md` and `final.md` for the agents. Pass their absolute paths to subagents, with the repository root and the run directory, also absolute; every agent passes both on. Run the scripts from the repository root, with the run's files by full path:
 
-- `references/rules.md` has the rules every agent follows.
-- `references/iteration.md`, `references/regressions.md` and `references/final.md` are the briefs for the iteration, regression and final agents.
-- `scripts/count-lines.sh` counts non-blank, non-comment lines. `-f <file>` reads the paths from a list file, and `--at <commit>` counts the files as they are in that commit.
-- `scripts/snapshot.sh` prints the id of a commit holding the current working tree, untracked files included, without touching the index or the branch.
+- `scripts/count-lines.sh` counts non-blank, non-comment lines: `-f <file>` reads the paths from a list file, `--at <commit>` counts them as of that commit.
+- `scripts/snapshot.sh` prints the id of a commit holding the working tree, untracked files included, without touching the index or the branch. `scripts/restore.sh <commit>` puts the tree back.
 
-The run's state lives in a `refine/` directory in your scratchpad, or in a temporary directory outside the repository if you have no scratchpad. The agents write it, and you read only `scoreboard.tsv`, the tail of `progress.log` and the reports they return. These are the files you handle:
+The run directory is `refine/` in your scratchpad, or a temporary directory outside the repository. You read only `scoreboard.md`, the tail of `progress.log` and the agents' reports. The agents write the rest:
 
-- `run-base.txt` and `iter<N>-base.txt` hold snapshots of the tree before the run and before iteration N.
-- `context.md` holds what the agents need to know about the project. The setup agent writes it.
-- `scope.txt` and `tests.txt` list the paths to count. The setup agent writes them, and later agents add to them.
-- `diff-base.txt` and `diff.patch` exist for a diff scope only. They hold the commit the diff starts from and the diff itself, frozen at setup.
-- `scoreboard.tsv` gets one row per iteration. You write it.
-- `progress.log` gets one line per step from every agent that runs commands, so you can tell a slow step from a hung one.
-- `report.md` is the final report. The final agent returns it, and you save it.
+- `context.md`: the project facts agents need, including compatibility, hot paths and verification procedures.
+- `intent.md`: the user's words on what the code should do, and where else that is written down.
+- `scope.txt` and `tests.txt`: the source and test paths to count.
+- for a diff scope, `diff-base.txt`, `diff.patch` and `scope-base.txt`: the base commit, the diff frozen at setup, and the scope's paths at the base, so renamed files count on both sides.
+- `areas.md`: the correct phase's areas, and which are done.
+- `log.md`, `rejected.md` and `deferred.md`: every change, every rejected finding with its reason, and the notes one phase leaves for another or for the user.
+- `run-base.txt` and `<label>-base.txt`: snapshots before the run and before each round.
+- `scoreboard.md`, which you write, `progress.log`, one line per step from agents that run commands, and `report.md`.
 
-## Loop
+Rounds are labelled by phase and number: `correct-1`, `elegant-3`, `fast-1`.
 
-1. **Setup.** Spawn one general-purpose subagent with the scope, the run directory, the path of `references/rules.md` and the path of your memory directory if you keep one, since subagents don't see your memory. It reads the project's agent instructions (`AGENTS.md`, `CLAUDE.md` or similar), its contributing guide, its CI configuration and the memory notes that bear on the scope. Then it writes `scope.txt`, `tests.txt` and `context.md`, plus `diff-base.txt` and `diff.patch` for a diff scope. `scope.txt` lists the source and build files and `tests.txt` the test files, one path per line. The lists don't overlap, so a directory goes in only if it holds no tests. If the scope is itself test code, it all goes in `scope.txt` and `tests.txt` stays empty. `context.md` holds:
-   - the scope kind, and for a diff scope how to read the frozen diff;
-   - the scope's files, their consumers and the specs the scope implements;
-   - the hot paths in the scope: code that runs per request, per entity, per item or per field;
-   - whether the public API is free to change, which holds only when the project's instructions say so or the code is unreleased;
-   - the conventions a change must follow: formatting, imports, comment and doc-comment style, test layout;
-   - full verification procedures, not just command names: running the unit suite, repairing the build tooling, and every step of the final verification, including each conformance or audit suite and every configuration CI builds. Each procedure records its normal duration, so agents can size their timeouts.
+## Start
 
-   The agent returns the paths in `scope.txt` and `tests.txt` and a one-line list of the final verification steps. Send it back if the list misses something you know the project needs. Then run `scripts/snapshot.sh > run-base.txt` and `scripts/count-lines.sh -f scope.txt`, and write row 0 of the scoreboard. For a diff scope, also run `scripts/count-lines.sh --at $(cat diff-base.txt) -f scope.txt`. The difference between the two `scope.txt` totals is the diff's net size, and each row records it. When you tell the user setup is done, give the scope's size and leave the verification steps out.
-2. **Iterate.** Run `scripts/snapshot.sh > iter<N>-base.txt`, then spawn one general-purpose iteration agent. Its prompt names `references/iteration.md` by absolute path, along with the run directory, the iteration number and your steering note if you have one. Wait for its completion notification. Never run two agents that edit the tree at once, because they share the working tree and the build tooling.
-3. **Check for regressions.** If `git diff --quiet $(cat iter<N>-base.txt) $(scripts/snapshot.sh)` says the iteration left the tree unchanged, skip this step and record the regressions as skipped. Otherwise spawn one general-purpose regression agent. Its prompt names `references/regressions.md` by absolute path, along with the run directory, the pass label `<N>.<k>` and the base file `iter<N>-base.txt`. If the test total fell in the iteration, add a note asking it to check that each removed or merged test's case is still covered. A fresh agent reviews the iteration because the iteration agent is biased toward its own changes. If it confirms a regression, spawn another fresh one for pass `<N>.<k+1>`, and repeat until a pass confirms none. If a pass reports red tests it couldn't fix, run it again with a note naming what failed.
-4. **Measure.** Count `scope.txt` yourself with the script instead of trusting the report's number, and append the scoreboard row. Count the "before" with `--at $(cat iter<N>-base.txt)` on the current list, so files an iteration added to it count on both sides. For a diff scope, recount `--at $(cat diff-base.txt) -f scope.txt` too, for the same reason.
-5. **Report.** Go straight on to steer and spawn the next iteration in the same turn, without asking the user anything. The message that ends that turn is the iteration's report, and it always holds the whole scoreboard as a Markdown table, header and every row so far. The columns are iteration, source lines before → after (and the diff's net size for a diff scope), findings proposed/accepted per lens, bugs fixed, and regressions confirmed/fixed across the iteration's passes. Under the table, write one line naming the iteration's largest removal, plus any red test result or `problem:` line a report carries, then one line saying the next iteration is running and with which steering note. A one-line "iteration N is running" is not a report: this table is the user's only view of the run.
-6. **Steer from the numbers.** The next iteration's note is your only lever. A round is thin when its net source removal is under 5 lines or under 1% of the diff's net size (of the scope's source lines for an area scope), whichever is larger.
-   - If source lines rose in the last iteration, the next note says: "The scope grew last iteration. This round accepts nothing that adds net lines, except a real bug fix with no structural alternative. Find the mechanism that absorbs the growth."
-   - After a thin round, the next note says: "The last round removed little. Reviewers propose redesigns first: a different core model, merged passes, a deleted module or a changed contract. Local cleanups rank below." It goes after the growth note when both apply.
-   - If the report says no accepted change removed source lines, this note replaces that one: "The last round found no removal. Reviewers propose only redesigns: a different core model, merged passes, a deleted module or a changed contract. No local cleanups." If that round is empty too, the loop has converged.
-   - If two thin rounds in a row fixed no bugs, the loop has converged. A round that was reverted doesn't count.
-   - If an iteration reports red tests it couldn't fix, it reverted to `iter<N>-base.txt`. Run the iteration again with a note naming what failed.
-7. **Sweep for regressions.** Once the loop converges, spawn a fresh regression agent with the base file `run-base.txt` and the pass label `final.<k>`, so one reviewer sees the whole run's diff at once. Bugs that come from two iterations interacting only show up here. Repeat with a fresh agent until a pass confirms none.
-8. **Finish.** Spawn one general-purpose final agent with `references/final.md` and the run directory, and tell the user which verification steps it runs. It runs the final verification and returns a summary followed by the full report. If it sends findings back into the loop, run more iterations, sweep again and finish again. Otherwise save the report part verbatim as `report.md` in the run directory, then give the user the scoreboard table, the summary and the path to `report.md`.
+1. **Find the code.** Use the repository the scope names. For another repository, such as a link to a remote branch, use the user's local clone if it is clean, or clone it into your scratchpad. Fetch a base that lives in another remote into a local ref. Never switch the branch of a clone the user works in.
+2. **Gather.** Write down every hint about what the code should do and about speed, from the invocation text and the conversation before it: a description, a pull request or issue, a protocol or RFC, a design doc, a remark that a path must be fast. Copy words and links verbatim. With no hint, write "none given".
+3. **Set up.** Note the time with `date +%H:%M` and spawn one general-purpose agent with `setup.md`, the scope, the repository root, the run directory, your notes and your memory directory if you keep one. Send it back if its final verification misses a step you know the project needs.
+4. **Measure.** Run `scripts/snapshot.sh > run-base.txt` and `scripts/count-lines.sh -f scope.txt`, and for a diff scope `--at $(cat diff-base.txt) -f scope-base.txt`; the difference is the diff's net size. Write the scoreboard header and row 0 with setup's duration. Tell the user in a few lines what will be refined, where its intent comes from, with the path of `intent.md` and any source setup couldn't reach, and whether "make it fast" will run. Ask setup's questions, and pass on its notes that bear on the run. Then go straight on to the first round.
 
-The scoreboard shows progress and sets no quota. Keep going until one of the convergence rules above fires.
+## Rounds
 
-When tooling breaks, such as a dead build daemon, the agent that hit it repairs it the way `context.md` says. If an agent reports that it couldn't, repair it yourself the same way, without reading code, and rerun the step.
+1. Run `scripts/snapshot.sh > <label>-base.txt` and note the time.
+2. Spawn one general-purpose fixer with `fixer.md` and the phase file, the repository root, the run directory, the round label and your steering note. Wait for its report, and when it still has background work running, stop it. Never run two agents that edit the tree at once.
+3. Note the time. Count `scope.txt` yourself, "before" with `--at $(cat <label>-base.txt)` on the current list, and recount the diff's net size the same way.
+4. Append the row to `scoreboard.md`, report, and go straight on to the next round without waiting for the user.
+
+The user needn't know how refine works, so talk to them in plain words, naming the phases "make it correct", "make it elegant" and "make it fast", without fixers, reviewers, areas, lenses or round labels. After every round, show the whole scoreboard as one table, its columns the phase and round number, the duration in minutes, source lines before → after (and the diff's net size), and findings applied/proposed. Under it, two lines at most: what changed, in user terms, and what runs next, plus any question, any red test or `problem:` line, and a note when the round added files to the count.
+
+A fixer that reports red tests it couldn't fix has reverted to `<label>-base.txt`: run the round again with a note naming what failed. A reverted round doesn't count toward ending a phase.
+
+## Phases
+
+### Correct
+
+The fixer runs one reviewer per area of `areas.md` that isn't done. An area whose reviewer led to no fix is done, so rounds shrink, and the phase ends when every area is done.
+
+### Elegant
+
+The fixer runs the `constraints`, `simplicity` and `parametricity` reviewers. A lens whose reviewer led to nothing accepted is dropped for the rest of the phase: name the lenses still running in each fixer's prompt. The phase ends when no lens is left, or after a thin round: one whose net source removal is under max(5 lines, 1% of the diff's net size), or of the scope's source lines for an area scope.
+
+### Fast
+
+Skip this phase when `context.md` lists no hot paths. The fixer runs the `hot-paths` reviewer, and the phase ends after a round that applies no speed change: bug and regression fixes don't count.
+
+## Finish
+
+Spawn one general-purpose agent with `final.md`, the repository root and the run directory, and tell the user which verification steps it runs. If it returns `back to <phase>:` lines, run one round of that phase with them as the note, then the final agent again. Otherwise save the report part verbatim as `report.md`, and give the user the scoreboard, the summary and its path.
+
+## Questions
+
+The run never waits for the user. Never use a tool that blocks on an answer, such as a question dialog: ask in your report and keep going.
+
+- Number the questions across the run, with the options and the pick, and say the run goes on and an answer at any time still counts. If you can notify the user, do.
+- A fixer sends an urgent question as soon as it meets one: relay it at once. Don't ask it again when the report marks it `(sent)`.
+- A report's `held:` count joins the open compatibility questions: say how many changes each now holds, without asking anything new.
+- Write an answer under its `user:` entry in `deferred.md` as `answered: <answer>`, and in `## User corrections` of `intent.md` or `## User rules` of `context.md`. Send it to a running fixer at once with your harness's message tool (`SendMessage` to the id its spawn returned, in Claude Code), or put it in the next fixer's note. An answer that lifts a compatibility rule frees the entries that rule held back: name them too.
+- If the answer's phase is over, run one round of it before the next phase or the final agent.
 
 ## While the run goes
 
-When the user corrects something during the run, add the correction to a `## User rules` section in `context.md`, so every later agent reads it. If it concerns code the run already changed, the next agent that edits the tree applies it before its own work.
+When tooling breaks, the agent that hit it repairs it as `context.md` says. If it couldn't, repair it yourself the same way, without reading code, and rerun the step.
 
-When the user asks how the run is going, look before you answer. Read the tail of `progress.log`, check when the running agent last wrote anything, and list the processes it started with their elapsed time. Report what you saw: the step, how long it has been running against its normal duration, and anything that looks hung. If you can't tell, say so. Pass on every hang, kill and tooling repair that an agent reports.
+Add the user's corrections to what the code should do to `## User corrections` in `intent.md`, and any other correction to `## User rules` in `context.md`. If one concerns code the run already changed, the next agent that edits the tree applies it first.
+
+When the user asks how the run is going, look first: the tail of `progress.log`, when the running agent last wrote, and the processes it started with their elapsed time. Report the step, how long it has run, and anything that looks hung, or say you can't tell. Pass on every hang, kill and tooling repair an agent reports.
