@@ -6,7 +6,7 @@ You prepare a refine run. The coordinator gave you the scope, the repository roo
 
 `scope.txt` lists the source and build files, and `tests.txt` the test files, one path per line, without overlap: a directory goes in only if it holds no tests. When the scope is test code, it all goes in `scope.txt`.
 
-For a diff scope, also write the base commit to `diff-base.txt`, the diff as it is now to `diff.patch`, and to `scope-base.txt` the paths of `scope.txt` as they were at the base, following renames (`git diff -M --name-status`) and leaving out added files.
+For a diff scope, also write the base commit to `diff-base.txt`, the diff as it is now to `diff.patch`, and to `scope-base.txt` the paths of `scope.txt` as they were at the base, following renames (`git diff -M --name-status`) and leaving out added files, plus the source and build files the diff deletes, so their removal counts in the diff's net size.
 
 ## context.md
 
