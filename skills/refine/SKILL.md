@@ -41,7 +41,7 @@ The run directory is `refine/` in your scratchpad, or a temporary directory outs
 - `context.md`: the project facts agents need, including compatibility, hot paths and verification procedures.
 - `intent.md`: the user's words on what the code should do, and where else that is written down.
 - `scope.txt` and `tests.txt`: the source and test paths to count.
-- for a diff scope, `diff-base.txt`, `diff.patch` and `scope-base.txt`: the base commit, the diff frozen at setup, and the scope's paths at the base, so renamed files count on both sides.
+- for a diff scope, `diff-base.txt`, `diff.patch` and `scope-base.txt`: the base commit, the diff frozen at setup, and the scope's paths at the base, so renamed files count on both sides and deleted files on the base side.
 - `areas.md`: the correct phase's areas, and which are done.
 - `log.md`, `rejected.md` and `deferred.md`: every change, every rejected finding with its reason, and the notes one phase leaves for another or for the user.
 - `run-base.txt` and `<label>-base.txt`: snapshots before the run and before each round.
